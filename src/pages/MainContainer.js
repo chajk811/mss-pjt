@@ -1,10 +1,6 @@
 import React from 'react'
 import './MainContainer.css'
-import { getCharacters } from '../api/character/CharacterApi'
-
-getCharacters(1).then(
-  res => console.log(res)
-)
+import CharacterList from '../components/CharacterList'
 
 const MainContainer = () => {
   return <div className='container'>
@@ -17,15 +13,7 @@ const MainContainer = () => {
         <button>tvSeries 없음</button>
         <button>초기화</button>
       </div>
-      <div className='content-wrapper'>
-        <div className='content'></div>
-        <div className='content'></div>
-        <div className='content'></div>
-        <div className='content'></div>
-        <div className='content'></div>
-        <div className='content'></div>
-        <div className='content'></div>
-      </div>
+      <CharacterList />
     </div>
   </div>
 }
