@@ -87,6 +87,10 @@ p {
   display: flex;
 }
 
+.card-wrapper .end-marker {
+  text-align: center;
+}
+
 .card.last {
   border: solid 2px red
 }

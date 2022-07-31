@@ -13,6 +13,8 @@ const CharacterList = ({ filters, reset, changeResetState }) => {
   const [page, setPage] = useState(_page)
 
   const fetchData = () => {
+    if (page > 10) return // 1 ~ 10 page 까지 호출
+
     getCharacters(page)
       .then(res => {
         const { data } = res
@@ -120,6 +122,7 @@ const CharacterList = ({ filters, reset, changeResetState }) => {
         )
       }
     })}
+    {page > 10 && <div className='end-marker'>end page</div>}
   </ div>
 }
 
