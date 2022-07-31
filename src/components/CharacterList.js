@@ -8,11 +8,10 @@ const CharacterList = ({ filters }) => {
 
   const [characters, setCharacters] = useState([])
   const [originList, setOriginList] = useState([])
+  const [deletedList, setdeletedList] = useState([])
   const [lastElement, setLastElement] = useState(null)
   const [page, setPage] = useState(_page)
 
-  // [TODO] filter on & fetchData 시, 필터링 적용
-  // [TODO] 삭제 버튼 기능 추가
   // [TODO] 초기화 버튼 클릭 시, deleted data originList 로 초기화
 
   const fetchData = () => {
@@ -21,6 +20,8 @@ const CharacterList = ({ filters }) => {
         const { data } = res
         setCharacters(characters.concat(data))
         setOriginList(originList.concat(data)) // save origin list data
+
+        if (deletedList.length > 0) setdeletedList(deletedList.concat(data))
       })
       .catch(error => console.log('error: ', error))
   }
@@ -35,7 +36,7 @@ const CharacterList = ({ filters }) => {
   }
 
   const filterData = () => {
-    let tmpData = originList // [TODO] 삭제한 데이터가 있는 경우, deleted data 불러오기
+    let tmpData = deletedList.length > 0 ? deletedList : originList
 
     Object.entries(filters).forEach(([key, value]) => {
       switch (value && key) {
@@ -55,6 +56,12 @@ const CharacterList = ({ filters }) => {
     setCharacters(tmpData)
   }
 
+  const deleteData = (url) => {
+    console.log('deleted Data', url)
+    setCharacters(characters.filter(v => v.url !== url))
+    setdeletedList(deletedList.length > 0 ? deletedList.filter(v => v.url !== url) : originList.filter(v => v.url !== url))
+  }
+
   useEffect(() => {
     fetchData()
   }, [page])
@@ -70,15 +77,15 @@ const CharacterList = ({ filters }) => {
   }, [lastElement])
 
   useEffect(() => {
-    // filter btn 이 눌린 경우, 필터링
+    // fetchData 후 & filter btn 이 눌린 경우, 필터링 데이터
     filterData()
-  }, [filters])
+  }, [filters, originList, deletedList])
 
   return <div className='card-wrapper'>
     {characters.map((character, idx) => {
       if (idx === characters.length - 1) {
         return (
-          <div className='card' key={idx} ref={setLastElement}>
+          <div className='card last' key={idx} ref={setLastElement}>
             <div className='content'>
               <p>name : {character.name || '-'}</p>
               <p>aliases : {character.aliases.join(', ') || '-'}</p>
@@ -87,7 +94,7 @@ const CharacterList = ({ filters }) => {
               <p>tvSeries : {character.tvSeries.filter(v => v).length}</p>
             </div>
             <div className='btn-area'>
-              <button className='delete-btn'>삭제</button>
+              <button className='delete-btn' onClick={e => deleteData(character.url)}>삭제</button>
             </div>
           </div>
         )
@@ -102,7 +109,7 @@ const CharacterList = ({ filters }) => {
               <p>tvSeries : {character.tvSeries.filter(v => v).length}</p>
             </div>
             <div className='btn-area'>
-              <button className='delete-btn'>삭제</button>
+              <button className='delete-btn' onClick={e => deleteData(character.url)}>삭제</button>
             </div>
           </div>
         )

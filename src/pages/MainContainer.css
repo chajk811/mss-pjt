@@ -87,6 +87,10 @@ p {
   display: flex;
 }
 
+.card.last {
+  border: solid 2px red
+}
+
 .card .content {
   width: 80%;
   display: flex;
