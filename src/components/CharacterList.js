@@ -2,17 +2,15 @@ import React, { useState, useEffect } from 'react'
 import qs from 'qs'
 import { getCharacters } from '../api/character/CharacterApi'
 
-const CharacterList = ({ filters }) => {
+const CharacterList = ({ filters, reset, changeResetState }) => {
   const queryParams = qs.parse(window.location.search, { ignoreQueryPrefix: true })
   const _page = Number(queryParams.page) || 1
 
   const [characters, setCharacters] = useState([])
   const [originList, setOriginList] = useState([])
-  const [deletedList, setdeletedList] = useState([])
+  const [deletedList, setDeletedList] = useState([])
   const [lastElement, setLastElement] = useState(null)
   const [page, setPage] = useState(_page)
-
-  // [TODO] 초기화 버튼 클릭 시, deleted data originList 로 초기화
 
   const fetchData = () => {
     getCharacters(page)
@@ -21,7 +19,7 @@ const CharacterList = ({ filters }) => {
         setCharacters(characters.concat(data))
         setOriginList(originList.concat(data)) // save origin list data
 
-        if (deletedList.length > 0) setdeletedList(deletedList.concat(data))
+        if (deletedList.length > 0) setDeletedList(deletedList.concat(data))
       })
       .catch(error => console.log('error: ', error))
   }
@@ -52,14 +50,13 @@ const CharacterList = ({ filters }) => {
       }
     })
 
-    console.log('filtering Data: ', tmpData)
+    // console.log('filtering Data: ', tmpData)
     setCharacters(tmpData)
   }
 
   const deleteData = (url) => {
-    console.log('deleted Data', url)
     setCharacters(characters.filter(v => v.url !== url))
-    setdeletedList(deletedList.length > 0 ? deletedList.filter(v => v.url !== url) : originList.filter(v => v.url !== url))
+    setDeletedList(deletedList.length > 0 ? deletedList.filter(v => v.url !== url) : originList.filter(v => v.url !== url))
   }
 
   useEffect(() => {
@@ -80,6 +77,14 @@ const CharacterList = ({ filters }) => {
     // fetchData 후 & filter btn 이 눌린 경우, 필터링 데이터
     filterData()
   }, [filters, originList, deletedList])
+
+  useEffect(() => {
+    // clicked reset btn
+    if (reset) {
+      setDeletedList([]) // reset deletedList
+      changeResetState(false) // reset state => false
+    }
+  }, [reset])
 
   return <div className='card-wrapper'>
     {characters.map((character, idx) => {
